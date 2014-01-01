@@ -37,15 +37,10 @@ Dispatch
     data-lang="en">Tweet</a>
 </div>
 
-Dispatch is yet another PHP micro-framework. It's very small and very straightforward to use.
-No classes, no namespaces. Just one file. Include it. Use it.
+Current version is 3.0.0.
 
-## Note on Dispatch 1.x
-
-If you're looking for Dispatch 1.x, switch to the
-[**1.x branch**](https://github.com/noodlehaus/dispatch/tree/1.x). Some functions
-in Dispatch 1.x are no longer present in 2.x core and have been moved to
-[dispatch-extras](https://github.com/noodlehaus/dispatch-extras)
+Dispatch is another PHP micro-framework. It's very small and very straightforward
+to use. No classes, no namespaces.
 
 ## Requirements
 Dispatch requires at least **PHP 5.4** to work.
@@ -68,7 +63,7 @@ To install using `composer`, have the following lines in your `composer.json` fi
   "require": {
     "php": ">= 5.4.0",
     ...
-    "dispatch/dispatch": "2.*",
+    "dispatch/dispatch": "3.*",
   }
 }
 ```
@@ -100,10 +95,10 @@ Some settings are needed by Dispatch, and they can be set via `config()`.
 // REQUIRED, base path for your views
 config('dispatch.views', '../views');
 
-// REQUIRED, default layout to use (omit .html.php extension)
+// OPTIONAL, layout file to use (defaults to 'layout')
 config('dispatch.layout', 'layout');
 
-// REQUIRED, cookie name to use for flash messages
+// OPTIONAL, cookie for flash messages (defaults to '_F')
 config('dispatch.flash_cookie', '_F');
 
 // OPTIONAL, specify your app's full URL
@@ -133,7 +128,12 @@ array of methods, or `*` (for all methods).
 
 ```php
 <?php
-// get route for index
+// get route for /
+on('GET', '/', function () {
+  echo "hello, world!\n";
+});
+
+// get route for /index
 on('GET', '/index', function () {
   echo "hello, world!\n";
 });
@@ -153,13 +153,13 @@ on('*', '/multi', function () {
 ## Grouped Routes (Resources)
 When working on APIs, you tend to create routes that resemble resources. You can do this by
 including the resource name in your route, or by scoping your route creation with a
-`resource($path, $routine)` call, where `$path` contains the name of the resource, and
+`prefix($path, $routine)` call, where `$path` contains the name of the resource, and
 `$routine` is a callable that contains routing calls.
 
 ```php
 <?php
 // let's create a users resource
-resource('users', function () {
+prefix('users', function () {
 
   on('GET', '/index', function () {
     // show list of users
@@ -241,22 +241,6 @@ redirect('/denied', 302, !authenticated());
 ?>
 ```
 
-## Request Headers
-Dispatch provides a  convenience function for accessing request headers via
-`request_headers($name = null)`. When called without parameters, it returns
-an associative array of all the request headers. If given a `$name` parameter,
-returns the value for that header or null if it doesn't exist.
-
-```php
-<?php
-// get all of it
-$headers = request_headers();
-
-// or just one
-$accept_encoding = request_headers('accept-encoding');
-?>
-```
-
 ## Request Method Overrides
 Method overrides set either via the `_method` form field or the
 'X-Http-Method-Override' header are supported. If either of these two are
@@ -272,6 +256,22 @@ code that describes how this is handled.
     $method = params('_method');
   else
     $method = $_SERVER['REQUEST_METHOD'];
+?>
+```
+
+## Request Headers
+Dispatch provides a  convenience function for accessing request headers via
+`request_headers($name = null)`. When called without parameters, it returns
+an associative array of all the request headers. If given a `$name` parameter,
+returns the value for that header or null if it doesn't exist.
+
+```php
+<?php
+// get all of it
+$headers = request_headers();
+
+// or just one
+$accept_encoding = request_headers('accept-encoding');
 ?>
 ```
 
@@ -307,7 +307,7 @@ filter('blog_id', function ($blog_id) {
 on('GET', '/blogs/:blog_id', function ($blog_id) {
   // pick up what we got from the stash
   $blog = scope('blog');
-  render('blogs/show', array('blog' => $blog));
+  render('blogs/show', array('blog' => $blog);
 });
 ?>
 ```
@@ -552,10 +552,10 @@ scope('user');
 $ip = client_ip();
 
 // escape a string's entities
-h('Marley & Me');
+html('Marley & Me');
 
 // make a string url-safe
-u('http://noodlehaus.github.com/dispatch');
+url('http://noodlehaus.github.com/dispatch');
 ?>
 ```
 
@@ -594,8 +594,8 @@ function site($path_only = false)
 
 // misc helpers
 function flash($key, $msg = null, $now = false)
-function u($str)
-function h($str, $flags = ENT_QUOTES, $enc = 'UTF-8')
+function url($str)
+function html($str, $flags = ENT_QUOTES, $enc = 'UTF-8')
 function ip()
 
 // entry point
@@ -607,8 +607,8 @@ function dispatch($method = null, $path = null)
 
 Some extra functions can be added to Dispatch via the following libraries:
 
-  * [dispatch-extras](http://github.com/noodlehaus/dispatch-extras) - encryption, caching
-  * [dispatch-mustache](http://github.com/noodlehaus/dispatch-mustache) - use mustache templates for your views
+* [dispatch-extras](http://github.com/noodlehaus/dispatch-extras) - encryption, caching
+* [dispatch-mustache](http://github.com/noodlehaus/dispatch-mustache) - use mustache templates for your views
 
 ## About the Author
 
