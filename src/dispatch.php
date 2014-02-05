@@ -871,6 +871,34 @@ function on($method, $path, $callback = null) {
 }
 
 /**
+ * A simple event registering/calling system. This method adds $callback
+ * to the list of callbacks for $name. If $callback is not callable, but
+ * an array or null, it will be passed to the event callbacks for $name
+ * as arguments.
+ *
+ * @param string $name Name of the event
+ * @param array|null|callable $callback Optional, either new callback or argumens.
+ *
+ * @return void
+ */
+function event($name, $callback = null) {
+  static $events = array();
+
+  if(is_callable($callback)) {
+    if(!isset($events[$name])) {
+      $events[$name] = array();
+    }
+    $events[$name][] = $callback;
+  } else {
+    if(isset($events[$name])) {
+      foreach($events[$name] as $funcs) {
+        call_user_func($func, $callback);
+      }
+    }
+  }
+}
+
+/**
  * Entry point for the library.
  *
  * @param string $method optional, for testing in the cli
