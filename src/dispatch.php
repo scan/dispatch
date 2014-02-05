@@ -884,14 +884,19 @@ function on($method, $path, $callback = null) {
 function event($name, $callback = null) {
   static $events = array();
 
+  // If the callback is actually a callback
   if(is_callable($callback)) {
+    // Check if the event has an array we can append to
     if(!isset($events[$name])) {
       $events[$name] = array();
     }
+    // Append the given callback
     $events[$name][] = $callback;
   } else {
+    // If the event has any number of event callbacks
     if(isset($events[$name])) {
-      foreach($events[$name] as $funcs) {
+      // Call each registered callback with the given arguments
+      foreach($events[$name] as $func) {
         call_user_func($func, $callback);
       }
     }
